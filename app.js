@@ -10,7 +10,7 @@ const tours = JSON.parse(
   })
 );
 
-app.get('/api/v1/tours', (req, res) => {
+const getAllTours = (req, res) => {
   res.status(200).json({
     status: 'success',
     result: tours.length,
@@ -18,9 +18,9 @@ app.get('/api/v1/tours', (req, res) => {
       tours,
     },
   });
-});
+};
 
-app.get('/api/v1/tours/:id', (req, res) => {
+const getTour = (req, res) => {
   const id = req.params.id * 1;
 
   const tour = tours.find((el) => el.id === id);
@@ -38,9 +38,9 @@ app.get('/api/v1/tours/:id', (req, res) => {
       },
     });
   }
-});
+};
 
-app.post('/api/v1/tours', (req, res) => {
+const createTour = (req, res) => {
   const tourId = tours[tours.length - 1].id + 1;
 
   const newTour = Object.assign({ id: tourId }, req.body);
@@ -54,9 +54,9 @@ app.post('/api/v1/tours', (req, res) => {
       res.status(201).json(newTour);
     }
   );
-});
+};
 
-app.patch('/api/v1/tours/:id', (req, res) => {
+const updateTour = (req, res) => {
   const id = req.params.id * 1;
 
   if (tours.length <= id) {
@@ -70,9 +70,9 @@ app.patch('/api/v1/tours/:id', (req, res) => {
       data: 'Updated',
     });
   }
-});
+};
 
-app.delete('/api/v1/tours/:id', (req, res) => {
+const deleteTour = (req, res) => {
   const id = req.params.id * 1;
 
   if (tours.length <= id) {
@@ -86,7 +86,58 @@ app.delete('/api/v1/tours/:id', (req, res) => {
       data: null,
     });
   }
-});
+};
+
+const getAllUsers = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This is not yet defined',
+  });
+};
+
+const getUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This is not yet defined',
+  });
+};
+
+const createUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This is not yet defined',
+  });
+};
+
+const updateUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This is not yet defined',
+  });
+};
+
+const deleteUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This is not yet defined',
+  });
+};
+
+app.route('/api/v1/tours').get(getAllTours).post(createTour);
+
+app
+  .route('/api/v1/tours/:id')
+  .get(getTour)
+  .patch(updateTour)
+  .delete(deleteTour);
+
+app.route('/api/v1/users').get(getAllUsers).post(createUser);
+
+app
+  .route('/api/v1/users/:id')
+  .get(getUser)
+  .patch(updateUser)
+  .delete(deleteUser);
 
 const PORT = 3000;
 app.listen(PORT, () => {
