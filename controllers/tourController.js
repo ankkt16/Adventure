@@ -40,7 +40,8 @@ exports.getTour = (req, res) => {
 exports.createTour = (req, res) => {
   const tourId = tours[tours.length - 1].id + 1;
 
-  const newTour = Object.assign({ id: tourId }, req.body);
+  // eslint-disable-next-line node/no-unsupported-features/es-syntax
+  const newTour = { id: tourId, ...req.body };
 
   tours.push(newTour);
   fs.writeFile(
