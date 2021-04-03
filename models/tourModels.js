@@ -17,7 +17,11 @@ const tourSchema = mongoose.Schema({
   },
   difficulty: {
     type: String,
-    required: [true, 'Atour must have a difficulty'],
+    required: [true, 'A tour must have a difficulty'],
+    enum: {
+      values: ['easy', 'medium', 'difficult'],
+      message: 'difficulty must be either easy medium or doifficult',
+    },
   },
   ratingsAverage: {
     type: Number,
@@ -45,12 +49,24 @@ const tourSchema = mongoose.Schema({
     type: String,
     required: [true, 'A tour must have a cover image'],
   },
+  secretTour: {
+    type: Boolean,
+    default: false,
+  },
   images: [String],
   createdAt: {
     type: Date,
     default: Date.now(),
   },
   startDates: [Date],
+});
+
+tourSchema.pre(/^find/, function (next) {
+  // console.log('entered middleware');
+  this.find({
+    secretTour: { $ne: true },
+  });
+  next();
 });
 
 const Tour = mongoose.model('Tour', tourSchema);

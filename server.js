@@ -5,10 +5,12 @@ const dotenv = require('dotenv');
 dotenv.config({ path: './config.env' });
 const app = require('./app');
 
-const DB = `mongodb+srv://Ankit:${process.env.DATABASE_PASSWORD}@cluster0.iidy3.mongodb.net/Adventure?retryWrites=true&w=majority`;
+// const DB = `mongodb+srv://Ankit:${process.env.DATABASE_PASSWORD}@cluster0.iidy3.mongodb.net/Adventure?retryWrites=true&w=majority`;
+// const DB1 = `mongodb+srv://Ankit:${process.env.DATABASE_PASSWORD1}@cluster0.i593w.mongodb.net/Adventure1?retryWrites=true&w=majority`;
 
 mongoose
-  .connect(DB, {
+  .connect(process.env.DATABASE_LOCAL, {
+    family: 4,
     useNewUrlParser: true,
     useCreateIndex: true,
     useFindAndModify: false,
