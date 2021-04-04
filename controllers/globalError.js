@@ -55,11 +55,11 @@ module.exports = (err, req, res, next) => {
   if (process.env.NODE_ENV === 'development') {
     sendDevError(err, res);
   } else if (process.env.NODE_ENV === 'production') {
-    let error = JSON.parse(JSON.stringify(err));
+    let error = Object.assign(err);
 
-    // console.log(err);
+    // console.log(error.name);
 
-    if (err.name === 'CastError') error = handleCastError(error);
+    if (error.name === 'CastError') error = handleCastError(error);
 
     if (error.code === 11000) error = handleDuplicateError(error);
 
