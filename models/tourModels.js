@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const tourSchema = mongoose.Schema({
   name: {
     type: String,
-    requires: [true, 'A tour must have a name'],
+    required: [true, 'A tour must have a name'],
     unique: true,
     trim: true,
   },
@@ -20,7 +20,7 @@ const tourSchema = mongoose.Schema({
     required: [true, 'A tour must have a difficulty'],
     enum: {
       values: ['easy', 'medium', 'difficult'],
-      message: 'difficulty must be either easy medium or doifficult',
+      message: 'difficulty must be either "easy" "medium" or "difficult"',
     },
   },
   ratingsAverage: {
