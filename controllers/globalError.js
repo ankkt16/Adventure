@@ -7,9 +7,9 @@ const handleCastError = (err) => {
 };
 
 const handleDuplicateError = (err) => {
-  const value = err.keyValue.name;
+  const value = Object.values(err.keyValue)[0];
 
-  // console.log(Object.keys(err.keyValue)[0]);
+  // console.log(Object.values(err.keyValue));
   const message = `The value: "${value}" already exist. Please use some other ${
     Object.keys(err.keyValue)[0]
   }`;
