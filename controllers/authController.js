@@ -3,6 +3,8 @@ const { promisify } = require('util');
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+const sendEmail = require('../utils/email');
+const crypto = require('crypto');
 
 const signInToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -97,3 +99,76 @@ exports.restrictTo = (...roles) => (req, res, next) => {
 
   next();
 };
+
+exports.forgotPassword = catchAsync(async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email });
+
+  if (!user) return next(new AppError('The user doeas not exist', 404));
+
+  const resetToken = user.createPasswordResetToken();
+  await user.save({ validateBeforeSave: false });
+
+  const resetURL = `${req.protocol}://${req.get(
+    'host'
+  )}/api/v1/users/resetPassword/${resetToken}`;
+
+  const message = `Forgot your pasword? \n Click on this url: ${resetURL} to change your password.\nIf this was not triggered by you kindly ignore.`;
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: 'Password reset token. Valid for 10 minutes',
+      message,
+    });
+
+    res.status(200).json({
+      status: 'success',
+      message: 'An email has been sent to you to change your password',
+    });
+  } catch (err) {
+    user.passwordResetToken = undefined;
+    user.passwordResetTokenExpiresAt = undefined;
+    await user.save({ validateBeforeSave: false });
+    next(
+      new AppError('There was an error sending mail, Try again later!', 500)
+    );
+  }
+});
+
+exports.resetPassword = catchAsync(async (req, res, next) => {
+  // Get token and encrpt it
+
+  const resetToken = crypto
+    .createHash('sha256')
+    .update(req.params.token)
+    .digest('hex');
+
+  // find user
+  const user = await User.findOne({
+    passwordResetToken: resetToken,
+    passwordResetTokenExpiresAt: { $gt: Date.now() },
+  });
+
+  if (!user)
+    return next(
+      new AppError(
+        'The token is not valid or has expired. Please try again.',
+        400
+      )
+    );
+
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  user.passwordResetToken = undefined;
+  user.passwordResetTokenExpiresAt = undefined;
+
+  await user.save();
+
+  // set password modified
+
+  const token = signInToken(user._id);
+  res.status(200).json({
+    status: 'success',
+    token,
+    message: 'logged in successfully',
+  });
+});
