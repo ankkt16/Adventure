@@ -1,10 +1,10 @@
 const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
+const crypto = require('crypto');
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const sendEmail = require('../utils/email');
-const crypto = require('crypto');
 
 const signInToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -62,7 +62,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   if (!token) {
     return next(
-      new AppError('You are not logged in Please log in to view tours', 401)
+      new AppError('You are not logged in Please log in to continue', 401)
     );
   }
 
@@ -170,5 +170,31 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     status: 'success',
     token,
     message: 'logged in successfully',
+  });
+});
+
+exports.updatePassword = catchAsync(async (req, res, next) => {
+  // Get the user
+
+  const { email } = req.user;
+  const user = await User.findOne({ email }).select('+password');
+
+  // Confirm the current password
+  const { currentPassword } = req.body;
+  if (!user || !(await user.validatePassword(currentPassword, user.password)))
+    return next(new AppError('Invalid password', 401));
+
+  // update password
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+
+  await user.save();
+
+  // log in user
+  const token = signInToken(user._id);
+  res.status(200).json({
+    status: 'success',
+    message: 'Password changed successfully',
+    token,
   });
 });
