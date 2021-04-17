@@ -21,6 +21,12 @@ router.patch(
   userController.profileUpdate
 );
 
+router.delete(
+  '/deactivateAccount',
+  authController.protect,
+  userController.deactivateAccount
+);
+
 router
   .route('/')
   .get(userController.getAllUsers)

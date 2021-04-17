@@ -1,3 +1,4 @@
+const { findByIdAndUpdate } = require('../models/userModel');
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 
@@ -54,6 +55,15 @@ exports.profileUpdate = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     user: updatedUser,
+  });
+});
+
+exports.deactivateAccount = catchAsync(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, { active: false });
+
+  res.status(204).json({
+    status: 'success',
+    data: null,
   });
 });
 
