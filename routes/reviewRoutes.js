@@ -3,7 +3,8 @@ const expres = require('express');
 const reviewController = require('../controllers/reviewController');
 const authController = require('../controllers/authController');
 
-const router = expres.Router();
+// mergeParams option is for nested routes
+const router = expres.Router({ mergeParams: true });
 
 router
   .route('/')
