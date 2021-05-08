@@ -27,6 +27,13 @@ router.delete(
   userController.deactivateAccount
 );
 
+router.get(
+  '/me',
+  authController.protect,
+  userController.getMe,
+  userController.getUser
+);
+
 router
   .route('/')
   .get(userController.getAllUsers)
