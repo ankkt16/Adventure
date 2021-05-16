@@ -27,6 +27,7 @@ const tourSchema = mongoose.Schema(
     ratingsAverage: {
       type: Number,
       default: 4.0,
+      set: (val) => Math.round(val * 10) / 10,
     },
     ratingsQuantity: {
       type: Number,
