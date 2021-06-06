@@ -102,6 +102,8 @@ const tourSchema = mongoose.Schema(
 );
 
 tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ startLocation: '2dsphere' });
+
 // Virtual populate tours with reviews
 tourSchema.virtual('reviews', {
   ref: 'Review',
