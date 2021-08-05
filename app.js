@@ -31,7 +31,7 @@ app.use(xss());
 app.use(
   hpp({
     whitelist: [
-      'duation',
+      'duration',
       'price',
       'ratingsAverage',
       'maxGroupSize',
